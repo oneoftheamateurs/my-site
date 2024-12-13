@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            text-align: center;
+        }
+
+        #display {
+            width: 100%;
+            height: 50px;
+            font-size: 28px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+
+        .equal {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .clear {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .operator {
+            background-color: #ffa500;
+            color: white;
+        }
+
+        .number {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="display" disabled>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="appendOperator('÷')">÷</button>
+            <button class="operator" onclick="appendOperator('*')">*</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="equal" onclick="calculate()">=</button>
+
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="number" onclick="appendNumber('0')">0</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '';
+        let calculated = false;
+
+        function appendNumber(number) {
+            // Prevent appending numbers after calculation without clearing
+            if (calculated) {
+                currentInput = number;
+                calculated = false;
+            } else {
+                currentInput += number;
+            }
+            document.getElementById("display").value = currentInput;
+        }
+
+        function appendOperator(operator) {
+            // Prevent multiple operators in a row
+            if (currentInput && !isNaN(currentInput.slice(-1))) {
+                currentInput += operator;
+                document.getElementById("display").value = currentInput;
+            }
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            document.getElementById("display").value = '';
+            calculated = false;
+        }
+
+        function calculate() {
+            try {
+                // Replacing the operator symbols with the correct JavaScript equivalents
+                let expression = currentInput
+                    .replace('÷', '/')  // Replace division symbol
+                    .replace('^', '**');  // Replace power symbol with exponentiation
+
+                let result = eval(expression);  // Evaluating the expression
+                document.getElementById("display").value = result;  // Display result
+                currentInput = result.toString();  // Keep the result for further calculation
+                calculated = true;  // Mark that the calculation is done
+            } catch (e) {
+                document.getElementById("display").value = 'Error';  // Show error if invalid expression
+                currentInput = '';  // Reset after error
+                calculated = false;
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            if (event.key >= '0' && event.key <= '9') {
+                appendNumber(event.key); // Handle numbers
+            } else if (event.key === '+' || event.key === '-' || event.key === '*' || event.key === '/') {
+                appendOperator(event.key === '/' ? '÷' : event.key); // Handle operators
+            } else if (event.key === 'Enter' || event.key === '=') {
+                calculate(); // Calculate result on Enter
+            } else if (event.key === 'Backspace') {
+                clearDisplay(); // Clear display on Backspace
+            }
+        });
+    </script>
+
+</body>
+</html>
